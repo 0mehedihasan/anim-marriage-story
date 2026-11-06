@@ -163,20 +163,18 @@ export function MarriageExperience() {
       <CurtainSystem ref={curtainRef} closing={scene === "closing" && entered} />
 
       {!entered && <div className="opening-copy">
-        <div className="opening-emblem" aria-hidden="true"><span>ب</span><i /></div>
-        <p className="eyebrow"><span />Marriage Biodata</p>
-        <h1>A Journey<br /><em>Begins</em></h1>
-        <p className="opening-subtitle">Take a moment to know Abdullah.</p>
+        <h1>Assalamu<br /><em>Alaikum</em></h1>
+        <p className="opening-subtitle">Thank you for opening this. Over the next few pages, you will meet Abdullah Al Hill Baki, called Anim at home, and the family who raised him.</p>
         <button className="begin-button" onClick={enterStory}>
-          Begin the Journey <ArrowRight size={17} strokeWidth={1.6} aria-hidden="true" />
+          Open the Biodata <ArrowRight size={17} strokeWidth={1.6} aria-hidden="true" />
         </button>
-        <span className="opening-voice-note"><Volume2 size={13} aria-hidden="true" /> Voice narration available</span>
+        <span className="opening-voice-note"><Volume2 size={13} aria-hidden="true" /> Narration plays aloud. You can turn it off at the top.</span>
       </div>}
 
       {entered && <>
         <header className="experience-header">
           <a className="brand-mark" href="#story" aria-label="Abdullah Al Hill Baki, journey home" onClick={(event) => { event.preventDefault(); restart(); }}>
-            <span className="brand-monogram">AB</span><span className="brand-name">Abdullah <i>Al Hill Baki</i></span>
+            <span className="brand-monogram">AB</span><span className="brand-name"><span className="brand-full">{biodata.personal.fullName}</span> <i>{biodata.personal.nickname}</i></span>
           </a>
           <div className="header-controls">
             <button className={`control-button${autoPlay ? " is-active" : ""}`} onClick={() => setAutoPlay((playing) => !playing)} aria-label={autoPlay ? "Turn autoplay off" : "Turn autoplay on"} aria-pressed={autoPlay}>

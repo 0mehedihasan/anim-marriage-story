@@ -32,7 +32,7 @@ export const biodata: Biodata = {
   },
   family: {
     father: { name: "Md Bazlur Rahman", occupation: "Retired" },
-    mother: { name: "Nure Zannat", occupation: "Housewife" },
+    mother: { name: "Nure Zannat", occupation: "Homemaker" },
     brothers: 0,
     sisters: 1,
     olderSister: {
@@ -61,27 +61,35 @@ export const biodata: Biodata = {
   },
   narration: {
     opening: {
-      text: "Welcome. Take a moment to get to know Abdullah Al Hill Baki.",
+      text: "Assalamu alaikum. Thank you for taking the time to get to know Abdullah Al Hill Baki, called Anim at home, and his family.",
       language: "en-US",
     },
     introduction: {
-      text: "Abdullah Al Hill Baki, known as Anim, is from Jamalpur, Bangladesh. He graduated in Computer Science and Engineering from Bangladesh University of Business and Technology in December 2025, with a CGPA of 2.92.",
+      text: "Anim was born on the twenty-first of June, two thousand, and grew up in Jamalpur. He is the younger child of Md Bazlur Rahman and Nure Zannat. Today he is twenty-six, a recent graduate, and ready to start a family of his own.",
+      language: "en-US",
+    },
+    about: {
+      text: "A few details first. Anim is five feet nine inches tall, and his blood group is A positive. He is a Bangladeshi Muslim from Jamalpur.",
+      language: "en-US",
+    },
+    education: {
+      text: "Anim studied Computer Science and Engineering at Bangladesh University of Business and Technology in Dhaka, and completed his degree in December 2025.",
       language: "en-US",
     },
     family: {
-      text: "Abdullah's family includes his father, Md Bazlur Rahman, who is retired, his mother, Nure Zannat, who is a housewife, and one sister. Abdullah is the second among the siblings.",
+      text: "Through every year of study, his family stood behind him. His father, Md Bazlur Rahman, is now retired. His mother, Nure Zannat, looks after the home. His older sister is married, with one child, and her husband runs a business in Uttara.",
       language: "en-US",
     },
     personal: {
-      text: "Abdullah is Muslim and Bangladeshi. His hometown is Jamalpur, and his permanent address is Gopalpur, Jamalpur.",
+      text: "The family is Muslim, and their home is in Gopalpur, Jamalpur. It is a home Anim hopes to share one day.",
       language: "en-US",
     },
     preferences: {
-      text: "You have raised your daughter with so much love. My wish is that, after marriage, she never feels she has lost the care of her parents' home. I hope she feels she has gained a partner who will share her joys, sorrows and dreams, and always honour her dignity. She finds joy in the little things: cake, a favourite song and a touch of playful mischief. The mountains call to her, and she enjoys dressing up and wearing a saree as a way to express her style.",
+      text: "Anim wanted to end with a few words of his own, written to her parents. You have raised your daughter with so much love. My wish is that, after marriage, she never feels she has lost the care of her parents' home. I hope she feels she has gained a partner who will share her joys, sorrows and dreams, and always honour her dignity. She finds joy in the little things: cake, a favourite song and a touch of playful mischief. The mountains call to her, and she enjoys dressing up and wearing a saree as a way to express her style.",
       language: "en-US",
     },
     closing: {
-      text: "Thank you for taking the time to learn about Abdullah Al Hill Baki.",
+      text: "Thank you for reading about Anim. If you would like to talk further, or to meet, his family would be very happy to hear from you.",
       language: "en-US",
     },
   },
