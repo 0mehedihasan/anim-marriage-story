@@ -6,6 +6,7 @@ export interface NarrationLine {
 export interface Biodata {
   personal: {
     fullName: string;
+    nickname: string;
     dateOfBirth: string;
     age: number;
     height: string;
@@ -37,6 +38,12 @@ export interface Biodata {
     mother: { name: string; occupation: string };
     brothers: number;
     sisters: number;
+    olderSister: {
+      maritalStatus: string;
+      children: number;
+      spouseOccupation: string;
+      spouseLocation: string;
+    };
     siblingPosition: string;
     familyBackground: string;
     familyResidence: string;
@@ -50,6 +57,7 @@ export interface Biodata {
   };
   preferences: {
     introduction: string;
+    partnerPortrait: string;
     expectations: string[];
   };
   narration: Partial<

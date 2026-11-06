@@ -3,15 +3,35 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { NarrationLine } from "@/types/biodata";
 
-const voiceConfig = { rate: 0.88, pitch: 0.95, volume: 1 };
+const voiceConfig = { rate: 0.88, pitch: 0.86, volume: 1 };
+const allowedVoiceLanguages = new Set(["en", "bn", "de"]);
+const masculineVoiceNameHints = new Set([
+  "alex", "albert", "amit", "arjun", "daniel", "david", "fred", "george", "hans", "james", "john", "klaus", "liam", "mark", "michael", "oliver", "otto", "rahul", "ravi", "stefan", "thomas", "yannick",
+]);
+
+const isAllowedVoice = (voice: SpeechSynthesisVoice) =>
+  allowedVoiceLanguages.has(voice.lang.split("-")[0].toLowerCase());
+
+const isLikelyMasculineVoice = (voice: SpeechSynthesisVoice) => {
+  const name = voice.name.toLowerCase();
+  const firstName = name.split(/[\s(]/, 1)[0];
+  return /\bmale\b/.test(name) || masculineVoiceNameHints.has(firstName);
+};
+
+export const narrationLanguages = [
+  { value: "en-US", label: "English" },
+  { value: "bn-BD", label: "বাংলা" },
+  { value: "de-DE", label: "Deutsch" },
+] as const;
+
+export type NarrationLanguage = (typeof narrationLanguages)[number]["value"];
 
 export function useNarrator() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [selectedVoiceURI, setSelectedVoiceURI] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState<NarrationLanguage>("en-US");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const voiceList = useRef(voices);
-  const selectedURI = useRef(selectedVoiceURI);
   const activeUtterance = useRef<SpeechSynthesisUtterance | null>(null);
   const isSupported = useSyncExternalStore(
     () => () => undefined,
@@ -21,16 +41,14 @@ export function useNarrator() {
 
   useEffect(() => {
     voiceList.current = voices;
-    selectedURI.current = selectedVoiceURI;
-  }, [selectedVoiceURI, voices]);
+  }, [voices]);
 
   useEffect(() => {
     if (!("speechSynthesis" in window)) return;
 
     const loadVoices = () => {
-      const available = window.speechSynthesis.getVoices();
+      const available = window.speechSynthesis.getVoices().filter(isAllowedVoice);
       setVoices(available);
-      setSelectedVoiceURI((current) => current || available.find((voice) => voice.localService && voice.lang.startsWith("en"))?.voiceURI || available[0]?.voiceURI || "");
     };
 
     const frame = window.requestAnimationFrame(loadVoices);
@@ -63,15 +81,18 @@ export function useNarrator() {
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(line.text);
-    const selected = voiceList.current.find((voice) => voice.voiceURI === selectedURI.current);
+    const languagePrefix = selectedLanguage.slice(0, 2).toLowerCase();
+    const languageVoices = voiceList.current.filter((voice) => voice.lang.toLowerCase().startsWith(languagePrefix));
     const preferred =
-      selected ??
+      languageVoices.find(isLikelyMasculineVoice) ??
+      languageVoices.find((voice) => voice.localService) ??
+      languageVoices[0] ??
       voiceList.current.find((voice) => voice.localService && voice.lang.toLowerCase().startsWith(line.language.slice(0, 2).toLowerCase())) ??
       voiceList.current.find((voice) => voice.lang.toLowerCase().startsWith(line.language.slice(0, 2).toLowerCase())) ??
       voiceList.current[0];
 
     if (preferred) utterance.voice = preferred;
-    utterance.lang = line.language;
+    utterance.lang = selectedLanguage;
     utterance.rate = voiceConfig.rate;
     utterance.pitch = voiceConfig.pitch;
     utterance.volume = voiceConfig.volume;
@@ -94,7 +115,7 @@ export function useNarrator() {
     activeUtterance.current = utterance;
     window.speechSynthesis.speak(utterance);
     return true;
-  }, []);
+  }, [selectedLanguage]);
 
   const pause = useCallback(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window && window.speechSynthesis.speaking) {
@@ -110,5 +131,5 @@ export function useNarrator() {
     }
   }, []);
 
-  return { voices, selectedVoiceURI, setSelectedVoiceURI, isSupported, isSpeaking, isPaused, speak, stop, pause, resume };
+  return { selectedLanguage, setSelectedLanguage, isSupported, isSpeaking, isPaused, speak, stop, pause, resume };
 }

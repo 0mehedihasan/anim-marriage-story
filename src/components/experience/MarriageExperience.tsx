@@ -6,7 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Expand, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { CurtainSystem } from "@/components/curtain/CurtainSystem";
 import { SceneContent } from "@/components/scenes/SceneContent";
-import { useNarrator } from "@/hooks/useNarrator";
+import { narrationLanguages, useNarrator } from "@/hooks/useNarrator";
 import { narrationForScene, nextScene, scenes } from "@/lib/sceneConfig";
 import { biodata } from "@/data/biodata";
 import type { SceneId } from "@/types/biodata";
@@ -38,8 +38,9 @@ export function MarriageExperience() {
   const curtainRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const reducedMotion = useSyncExternalStore(subscribeToMotionPreference, getMotionPreference, () => false);
-  const { voices, selectedVoiceURI, setSelectedVoiceURI, isSupported, isSpeaking, isPaused, speak, stop, pause, resume } = useNarrator();
+  const { selectedLanguage, setSelectedLanguage, isSupported, isSpeaking, isPaused, speak, stop, pause, resume } = useNarrator();
   const sceneIndex = scenes.findIndex((item) => item.id === scene);
+  const progressIndex = Math.min(Math.max(sceneIndex, 1), scenes.length - 2);
   const speechLine = biodata.narration[narrationForScene(scene)];
 
   const changeScene = useCallback((next: SceneId) => {
@@ -184,10 +185,10 @@ export function MarriageExperience() {
             <button className={`control-button${voiceEnabled ? " is-active" : ""}`} onClick={() => { setVoiceEnabled((enabled) => !enabled); if (voiceEnabled) stop(); }} aria-label={voiceEnabled ? "Mute narration" : "Enable narration"} aria-pressed={voiceEnabled}>
               {voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}<span>Voice</span>
             </button>
-            {isSupported && voices.length > 1 && <label className="voice-select-wrap">
+            {isSupported && <label className="voice-select-wrap">
               <span className="sr-only">Narration voice</span>
-              <select value={selectedVoiceURI} onChange={(event) => { stop(); setSelectedVoiceURI(event.target.value); }} aria-label="Choose narration voice">
-                {voices.map((voice) => <option key={voice.voiceURI} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
+              <select value={selectedLanguage} onChange={(event) => setSelectedLanguage(event.target.value as typeof selectedLanguage)} aria-label="Narration language">
+                {narrationLanguages.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}
               </select>
             </label>}
             {isSpeaking && <button className="control-button voice-pause" onClick={() => isPaused ? resume() : pause()} aria-label={isPaused ? "Resume narration" : "Pause narration"}>
@@ -207,8 +208,8 @@ export function MarriageExperience() {
           <div className="navigation-controls">
             <button className="icon-button nav-arrow" aria-label="Previous scene" onClick={() => step(-1)} disabled={sceneIndex <= 1}><ArrowLeft size={17} /></button>
             <div className="progress-wrap">
-              <div className="progress-track"><span style={{ width: `${Math.max(0, ((sceneIndex - 1) / (scenes.length - 2)) * 100)}%` }} /></div>
-              <span className="progress-count">{String(Math.max(sceneIndex, 1)).padStart(2, "0")} <i>/</i> {String(scenes.length - 2).padStart(2, "0")}</span>
+              <div className="progress-track"><span style={{ width: `${(progressIndex / (scenes.length - 2)) * 100}%` }} /></div>
+              <span className="progress-count">{String(progressIndex).padStart(2, "0")} <i>/</i> {String(scenes.length - 2).padStart(2, "0")}</span>
             </div>
             <button className="icon-button nav-arrow" aria-label="Next scene" onClick={() => step(1)} disabled={sceneIndex >= scenes.length - 1}><ArrowRight size={17} /></button>
           </div>

@@ -29,6 +29,7 @@ export default function PrintPage() {
           <span className="print-rule" />
         </header>
         <PrintSection title="Personal Information">
+          <PrintRow label="Nickname" value={personal.nickname} />
           <PrintRow label="Date of birth" value={personal.dateOfBirth} />
           <PrintRow label="Age" value={`${personal.age} years`} />
           <PrintRow label="Height" value={personal.height} />
@@ -59,6 +60,8 @@ export default function PrintPage() {
           <PrintRow label="Mother" value={`${family.mother.name} · ${family.mother.occupation}`} />
           <PrintRow label="Brothers" value={family.brothers} />
           <PrintRow label="Sisters" value={family.sisters} />
+          {family.sisters === 1 && <PrintRow label="Older sister" value={`${family.olderSister.maritalStatus} · ${family.olderSister.children} child`} />}
+          {family.sisters === 1 && <PrintRow label="Brother-in-law" value={`${family.olderSister.spouseOccupation} · ${family.olderSister.spouseLocation}`} />}
           <PrintRow label="Sibling position" value={family.siblingPosition} />
           <PrintRow label="Family residence" value={family.familyResidence} />
         </PrintSection>
@@ -69,8 +72,9 @@ export default function PrintPage() {
           <PrintRow label="Personal qualities" value={personalLife.qualities.join(", ")} />
           <PrintRow label="Other information" value={personalLife.otherInformation} />
         </PrintSection>}
-        {(preferences.introduction || preferences.expectations.length > 0) && <PrintSection title="Partner Preferences">
+        {(preferences.introduction || preferences.partnerPortrait || preferences.expectations.length > 0) && <PrintSection title="Partner Preferences">
           <PrintRow label="Introduction" value={preferences.introduction} />
+          <PrintRow label="A little about her" value={preferences.partnerPortrait} />
           <PrintRow label="Expectations" value={preferences.expectations.join(", ")} />
         </PrintSection>}
         <footer className="print-footer">Abdullah Al Hill Baki <span>·</span> Marriage Biodata</footer>

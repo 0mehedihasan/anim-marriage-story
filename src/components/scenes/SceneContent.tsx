@@ -36,6 +36,13 @@ function Fact({ icon: Icon, label, value }: { icon: typeof UserRound; label: str
 
 export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) {
   const { personal, education, professional, family, personalLife, preferences } = biodata;
+  const hasEducation = [education.highestEducation, education.degree, education.subject, education.institution, education.passingYear, education.result].some(Boolean);
+  const educationSummary = [
+    education.subject?.replace("Computer Science and Engineering", "Computer Science & Engineering"),
+    education.institution ? "BUBT" : "",
+    education.passingYear,
+    education.result,
+  ].filter(Boolean).join(" · ");
 
   return (
     <motion.div
@@ -59,6 +66,8 @@ export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) 
             <div className="intro-copy">
               <motion.p className="eyebrow" variants={reveal}><span />Marriage Biodata</motion.p>
               <motion.h1 variants={reveal}>{personal.fullName}</motion.h1>
+              {personal.nickname && <motion.p className="intro-nickname" variants={reveal}>Known as {personal.nickname}</motion.p>}
+              {educationSummary && <motion.p className="intro-education" variants={reveal}>{educationSummary}</motion.p>}
               <motion.p className="intro-description" variants={reveal}>
                 An introduction to the personal and family details shared for Abdullah&apos;s marriage biodata.
               </motion.p>
@@ -105,13 +114,15 @@ export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) 
 
       {scene === "education" && (
         <>
-          <SceneHeading eyebrow="Learning & growth" title="His Educational Journey" note="Education details will be added when shared." />
+          <SceneHeading eyebrow="Learning & growth" title="His Educational Journey" note={hasEducation ? educationSummary : "Education details will be added when shared."} />
           <motion.div className="empty-journey" variants={reveal}>
             <span className="journey-icon"><BookOpen size={24} strokeWidth={1.35} aria-hidden="true" /></span>
-            <div className="journey-track"><i /><i /><i /></div>
-            <div className="journey-placeholders"><span>Education</span><span>Qualifications</span><span>Institution</span></div>
-            <DataState />
-            {[education.highestEducation, education.degree, education.subject, education.institution, education.passingYear, education.result].some(Boolean) && (
+            {!hasEducation && <>
+              <div className="journey-track"><i /><i /><i /></div>
+              <div className="journey-placeholders"><span>Education</span><span>Qualifications</span><span>Institution</span></div>
+              <DataState />
+            </>}
+            {hasEducation && (
               <dl className="detail-list">
                 {education.degree && <div><dt>Degree</dt><dd>{education.degree}</dd></div>}
                 {education.subject && <div><dt>Subject</dt><dd>{education.subject}</dd></div>}
@@ -168,7 +179,11 @@ export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) 
               </article>
               {family.sisters > 0 && <article className="family-member family-member--sister">
                 <span className="member-symbol"><UserRound size={20} strokeWidth={1.4} aria-hidden="true" /></span>
-                <small>{family.sisters === 1 ? "Sister" : "Sisters"}</small><h2>{family.sisters === 1 ? "One sister" : `${family.sisters} sisters`}</h2>
+                <small>{family.sisters === 1 ? "Older sister" : "Sisters"}</small><h2>{family.sisters === 1 ? "One sister" : `${family.sisters} sisters`}</h2>
+                {family.sisters === 1 && <>
+                  <p>{family.olderSister.maritalStatus} · {family.olderSister.children} child</p>
+                  <p className="family-detail">Her husband is a {family.olderSister.spouseOccupation.toLowerCase()} based in {family.olderSister.spouseLocation}.</p>
+                </>}
               </article>}
               {family.brothers > 0 && <article className="family-member">
                 <span className="member-symbol"><UserRound size={20} strokeWidth={1.4} aria-hidden="true" /></span>
@@ -205,7 +220,11 @@ export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) 
           <SceneHeading eyebrow="A thoughtful next chapter" title="Looking Toward the Future" />
           <motion.div className="future-statement" variants={reveal}>
             <span className="future-rule" />
-            {preferences.introduction || <p className="future-copy">Partner preferences have not been shared yet.</p>}
+            <p className="future-copy">{preferences.introduction || "Partner preferences have not been shared yet."}</p>
+            {preferences.partnerPortrait && <div className="future-portrait">
+              <p className="eyebrow"><span />A little about her</p>
+              <p>{preferences.partnerPortrait}</p>
+            </div>}
             {preferences.expectations.length > 0 && <div className="expectation-list">{preferences.expectations.map((item) => <span key={item}>{item}</span>)}</div>}
             <span className="future-signature">Abdullah Al Hill Baki</span>
           </motion.div>

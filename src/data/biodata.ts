@@ -3,6 +3,7 @@ import type { Biodata } from "@/types/biodata";
 export const biodata: Biodata = {
   personal: {
     fullName: "Abdullah Al Hill Baki",
+    nickname: "Anim",
     dateOfBirth: "21 June 2000",
     age: 26,
     height: "5'9\"",
@@ -16,10 +17,10 @@ export const biodata: Biodata = {
   education: {
     highestEducation: "",
     degree: "",
-    subject: "",
-    institution: "",
-    passingYear: "",
-    result: "",
+    subject: "Computer Science and Engineering",
+    institution: "Bangladesh University of Business and Technology (BUBT)",
+    passingYear: "December 2025",
+    result: "CGPA 2.92",
   },
   professional: {
     currentOccupation: "",
@@ -34,6 +35,12 @@ export const biodata: Biodata = {
     mother: { name: "Nure Zannat", occupation: "Housewife" },
     brothers: 0,
     sisters: 1,
+    olderSister: {
+      maritalStatus: "Married",
+      children: 1,
+      spouseOccupation: "Businessman",
+      spouseLocation: "Uttara",
+    },
     siblingPosition: "2nd among siblings",
     familyBackground: "",
     familyResidence: "",
@@ -46,7 +53,10 @@ export const biodata: Biodata = {
     otherInformation: "",
   },
   preferences: {
-    introduction: "",
+    introduction:
+      "You have raised your daughter with so much love. My wish is that, after marriage, she never feels she has lost the care of her parents' home. I hope she feels she has gained a partner who will share her joys, sorrows and dreams, and always honour her dignity.",
+    partnerPortrait:
+      "She finds joy in the little things: cake, a favourite song and a touch of playful mischief. The mountains call to her, and she enjoys dressing up and wearing a saree as a way to express her style.",
     expectations: [],
   },
   narration: {
@@ -55,7 +65,7 @@ export const biodata: Biodata = {
       language: "en-US",
     },
     introduction: {
-      text: "Abdullah Al Hill Baki is from Jamalpur, Bangladesh. This introduction shares the personal and family details provided for his marriage biodata.",
+      text: "Abdullah Al Hill Baki, known as Anim, is from Jamalpur, Bangladesh. He graduated in Computer Science and Engineering from Bangladesh University of Business and Technology in December 2025, with a CGPA of 2.92.",
       language: "en-US",
     },
     family: {
@@ -64,6 +74,10 @@ export const biodata: Biodata = {
     },
     personal: {
       text: "Abdullah is Muslim and Bangladeshi. His hometown is Jamalpur, and his permanent address is Gopalpur, Jamalpur.",
+      language: "en-US",
+    },
+    preferences: {
+      text: "You have raised your daughter with so much love. My wish is that, after marriage, she never feels she has lost the care of her parents' home. I hope she feels she has gained a partner who will share her joys, sorrows and dreams, and always honour her dignity. She finds joy in the little things: cake, a favourite song and a touch of playful mischief. The mountains call to her, and she enjoys dressing up and wearing a saree as a way to express her style.",
       language: "en-US",
     },
     closing: {
