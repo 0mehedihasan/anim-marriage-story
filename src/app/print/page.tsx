@@ -89,7 +89,7 @@ export default function PrintPage() {
         </PrintSection>}
         {(preferences.introduction || preferences.partnerPortrait || preferences.expectations.length > 0) && <PrintSection title="Partner Preferences">
           <PrintRow label="Introduction" value={preferences.introduction} />
-          <PrintRow label="A little about her" value={preferences.partnerPortrait} />
+          <PrintRow label="What I like about her" value={preferences.partnerPortrait} />
           <PrintRow label="Expectations" value={preferences.expectations.join(", ")} />
         </PrintSection>}
         <footer className="print-footer">Abdullah Al Hill Baki <span>·</span> Marriage Biodata</footer>

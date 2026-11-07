@@ -102,7 +102,7 @@ function CinematicLetter({
   const partnershipParagraphs = preferences.introduction.split("\n\n");
   const daughterParagraphs = preferences.partnerPortrait.split("\n\n");
   const partnershipTitle = "A Promise of Partnership";
-  const daughterTitle = "A Little About Your Daughter";
+  const daughterTitle = "What I Like About Her";
   const narrationSegments = [partnershipTitle, ...partnershipParagraphs, daughterTitle, ...daughterParagraphs];
   const narrationStarts = narrationSegments.reduce<{ cursor: number; starts: number[] }>((result, segment) => {
     const start = narrationText.indexOf(segment, result.cursor);
