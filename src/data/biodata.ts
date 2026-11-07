@@ -4,8 +4,8 @@ export const biodata: Biodata = {
   personal: {
     fullName: "Abdullah Al Hill Baki",
     nickname: "Anim",
-    dateOfBirth: "21 June 2000",
-    age: 26,
+    dateOfBirth: "1998",
+    age: 28,
     height: "5'9\"",
     weight: "78 kg",
     bloodGroup: "A+",
@@ -80,7 +80,7 @@ export const biodata: Biodata = {
   },
   preferences: {
     introduction: [
-      "You have raised your daughter with immense love, care, and responsibility. My sincere wish is that, after marriage, she never feels that she has lost the warmth, affection, and sense of belonging of her parents' home. Instead, I hope she feels that she has gained a life partner who will stand beside her with sincerity, responsibility, and respect.",
+      "You have raised your daughter with immense love, care, and devotion. My sincere wish is that, after marriage, she never feels that she has left behind the warmth, affection, and security of her parental home. Rather, I hope she feels that she has gained a life partner who will stand beside her through every joy and hardship, share her dreams and aspirations, support her in every chapter of life, and always respect her dignity, individuality, and worth.",
       "I believe marriage is not simply a relationship between two individuals. It is a commitment to understand one another, share responsibilities, support each other's dreams, and remain beside each other through both the joyful and difficult chapters of life.",
       "I want to be a husband who listens to her, respects her opinions and individuality, supports her aspirations, and takes responsibility for building a peaceful and secure life together. I also understand that marriage brings responsibilities toward both families. I will always respect and value the people who have raised her with love and care, and I hope she will always feel free to maintain that bond with her parents and family.",
     ].join("\n\n"),
@@ -99,7 +99,7 @@ export const biodata: Biodata = {
       language: "en-US",
     },
     introduction: {
-      text: "Anim was born on the twenty-first of June, two thousand, and grew up in Jamalpur. He is the younger child of Md Bazlur Rahman and Nure Zannat. Today he is twenty-six, a recent graduate, and ready to start a family of his own.",
+      text: "Anim was born in 1998 and grew up in Jamalpur. He is the younger child of Md Bazlur Rahman and Nure Zannat. Today he is twenty-eight, a recent graduate, and ready to start a family of his own.",
       language: "en-US",
     },
     about: {
@@ -121,7 +121,7 @@ export const biodata: Biodata = {
     preferences: {
       text: [
         "A Promise of Partnership",
-        "You have raised your daughter with immense love, care, and responsibility. My sincere wish is that, after marriage, she never feels that she has lost the warmth, affection, and sense of belonging of her parents' home. Instead, I hope she feels that she has gained a life partner who will stand beside her with sincerity, responsibility, and respect.",
+        "You have raised your daughter with immense love, care, and devotion. My sincere wish is that, after marriage, she never feels that she has left behind the warmth, affection, and security of her parental home. Rather, I hope she feels that she has gained a life partner who will stand beside her through every joy and hardship, share her dreams and aspirations, support her in every chapter of life, and always respect her dignity, individuality, and worth.",
         "I believe marriage is not simply a relationship between two individuals. It is a commitment to understand one another, share responsibilities, support each other's dreams, and remain beside each other through both the joyful and difficult chapters of life.",
         "I want to be a husband who listens to her, respects her opinions and individuality, supports her aspirations, and takes responsibility for building a peaceful and secure life together. I also understand that marriage brings responsibilities toward both families. I will always respect and value the people who have raised her with love and care, and I hope she will always feel free to maintain that bond with her parents and family.",
         "A Little About Your Daughter",

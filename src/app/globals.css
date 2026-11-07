@@ -483,6 +483,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid
   .print-page { min-height: auto; padding: 0; background: white; }
   .print-toolbar { display: none; }
   .print-document { width: auto; min-height: auto; padding: 0; box-shadow: none; }
+  .print-profile-photo { width: 96px; height: 144px; }
   .scene-content--education { max-height: none; overflow: visible; }
   .print-section { margin-top: 14px; }
   .print-section h2 { font-size: 15px; }
