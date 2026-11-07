@@ -57,7 +57,7 @@ export const biodata: Biodata = {
   },
   family: {
     father: { name: "Md Bazlur Rahman", occupation: "Retired" },
-    mother: { name: "Nure Zannat", occupation: "Homemaker" },
+    mother: { name: "Nure Zannat", occupation: "Housewife" },
     brothers: 0,
     sisters: 1,
     olderSister: {
@@ -111,7 +111,7 @@ export const biodata: Biodata = {
       language: "en-US",
     },
     family: {
-      text: "Through every year of study, his family stood behind him. His father, Md Bazlur Rahman, is now retired. His mother, Nure Zannat, looks after the home. His older sister, Fatema tuz jahura Rima, is married, with one child, and her husband runs a business in Uttara.",
+      text: "Through every year of study, his family stood behind him. His father, Md Bazlur Rahman, is now retired. His mother, Nure Zannat, is a housewife. His older sister, Fatema tuz jahura Rima, is married, with one child, and her husband runs a business in Uttara.",
       language: "en-US",
     },
     personal: {
