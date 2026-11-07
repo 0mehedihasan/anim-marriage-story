@@ -87,9 +87,9 @@ export default function PrintPage() {
           <PrintRow label="Personal qualities" value={personalLife.qualities.join(", ")} />
           <PrintRow label="Other information" value={personalLife.otherInformation} />
         </PrintSection>}
-        {(preferences.introduction || preferences.partnerPortrait || preferences.expectations.length > 0) && <PrintSection title="Partner Preferences">
+        {(preferences.introduction || preferences.partnerPortrait || preferences.expectations.length > 0) && <PrintSection title="My Preferences">
           <PrintRow label="Introduction" value={preferences.introduction} />
-          <PrintRow label="What I notice about her" value={preferences.partnerPortrait} />
+          <PrintRow label="What I like about her" value={preferences.partnerPortrait} />
           <PrintRow label="Expectations" value={preferences.expectations.join(", ")} />
         </PrintSection>}
         <footer className="print-footer">Abdullah Al Hill Baki <span>·</span> Marriage Biodata</footer>
