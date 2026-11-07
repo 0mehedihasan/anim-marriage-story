@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import gsap from "gsap";
@@ -86,6 +86,7 @@ function CinematicLetter({
   reducedMotion,
   paused,
   onComplete,
+  onManualScroll,
   narrationText,
   spokenCharacterIndex,
 }: {
@@ -93,12 +94,16 @@ function CinematicLetter({
   reducedMotion: boolean;
   paused: boolean;
   onComplete: () => void;
+  onManualScroll: () => void;
   narrationText: string;
   spokenCharacterIndex: number | null;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const manualModeRef = useRef(false);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const [manualMode, setManualMode] = useState(false);
   const partnershipParagraphs = preferences.introduction.split("\n\n");
   const daughterParagraphs = preferences.partnerPortrait.split("\n\n");
   const partnershipTitle = "A Promise of Partnership";
@@ -116,6 +121,20 @@ function CinematicLetter({
   const daughterTitleStart = narrationStarts[partnershipParagraphs.length + 1];
   const daughterStarts = narrationStarts.slice(partnershipParagraphs.length + 2);
 
+  const enterManualMode = () => {
+    if (manualModeRef.current) return;
+    manualModeRef.current = true;
+    setManualMode(true);
+    onManualScroll();
+  };
+
+  useEffect(() => {
+    if (!paused && manualModeRef.current) {
+      manualModeRef.current = false;
+      setManualMode(false);
+    }
+  }, [paused]);
+
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
     const track = trackRef.current;
@@ -130,12 +149,13 @@ function CinematicLetter({
       onComplete();
     };
 
-    if (reducedMotion) {
+    const onScroll = () => {
+      if (viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight - 4) completeOnce();
+    };
+
+    if (reducedMotion || manualMode) {
       gsap.set(viewport, { opacity: 1 });
       gsap.set(revealedElements, { opacity: 1, y: 0 });
-      const onScroll = () => {
-        if (viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight - 4) completeOnce();
-      };
       const frame = window.requestAnimationFrame(onScroll);
       viewport.addEventListener("scroll", onScroll, { passive: true });
 
@@ -146,15 +166,15 @@ function CinematicLetter({
       };
     }
 
-    gsap.set(viewport, { opacity: 0 });
-    gsap.set(revealedElements, { opacity: 0, y: 18 });
+    const startScroll = viewport.scrollTop;
+    const isResuming = startScroll > 0;
+    const scrollEnd = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
+    const distance = Math.max(0, scrollEnd - startScroll);
+    gsap.set(viewport, { opacity: isResuming ? 1 : 0 });
+    gsap.set(revealedElements, isResuming ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 });
 
     const pixelsPerSecond = 8.5;
     const viewportHeight = viewport.clientHeight;
-    const finalParagraph = revealedElements.at(-1);
-    const distance = finalParagraph
-      ? Math.max(0, finalParagraph.offsetTop + finalParagraph.offsetHeight - viewportHeight * 0.72)
-      : 0;
     const scrollStart = 1.3;
     const scrollDuration = distance / pixelsPerSecond;
     const timeline = gsap.timeline({
@@ -163,27 +183,24 @@ function CinematicLetter({
     });
 
     timeline
-      .to(viewport, { opacity: 1, duration: 1.35, ease: "power1.out" }, 0)
-      .fromTo(
-        track,
-        { y: 0 },
-        { y: -distance, duration: scrollDuration, ease: "none" },
-        scrollStart,
-      );
+      .to(viewport, { opacity: 1, duration: isResuming ? 0 : 1.35, ease: "power1.out" }, 0)
+      .to(viewport, { scrollTop: scrollEnd, duration: scrollDuration, ease: "none" }, scrollStart);
 
-    revealedElements.forEach((element, index) => {
-      const isHeading = element.matches(".letter-title, .letter-section-title");
-      const revealAt = isHeading
-        ? index === 0 ? 0.35 : Math.max(scrollStart, scrollStart + (element.offsetTop - viewportHeight * 0.78) / pixelsPerSecond)
-        : Math.max(scrollStart, scrollStart + (element.offsetTop - viewportHeight * 0.82) / pixelsPerSecond);
+    if (!isResuming) {
+      revealedElements.forEach((element, index) => {
+        const isHeading = element.matches(".letter-title, .letter-section-title");
+        const revealAt = isHeading
+          ? index === 0 ? 0.35 : Math.max(scrollStart, scrollStart + (element.offsetTop - viewportHeight * 0.78) / pixelsPerSecond)
+          : Math.max(scrollStart, scrollStart + (element.offsetTop - viewportHeight * 0.82) / pixelsPerSecond);
 
-      timeline.fromTo(
-        element,
-        { opacity: 0, y: 18 },
-        { opacity: 1, y: 0, duration: 1.1, ease: "power2.out" },
-        revealAt,
-      );
-    });
+        timeline.fromTo(
+          element,
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: 1.1, ease: "power2.out" },
+          revealAt,
+        );
+      });
+    }
 
     timeline.to({}, { duration: 3.5 }, scrollStart + scrollDuration);
     timelineRef.current = timeline;
@@ -194,7 +211,7 @@ function CinematicLetter({
       timelineRef.current = null;
       gsap.set([viewport, track, ...revealedElements], { clearProps: "all" });
     };
-  }, [onComplete, preferences, reducedMotion]);
+  }, [manualMode, onComplete, preferences, reducedMotion]);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -222,10 +239,36 @@ function CinematicLetter({
 
   return (
     <div
-      className={`letter-viewport${reducedMotion ? " letter-viewport--reduced" : ""}`}
+      className={`letter-viewport${reducedMotion ? " letter-viewport--reduced" : ""}${manualMode ? " letter-viewport--manual" : ""}`}
       ref={viewportRef}
       aria-labelledby="partner-letter-title"
       tabIndex={0}
+      onPointerDown={(event) => {
+        const bounds = event.currentTarget.getBoundingClientRect();
+        if (event.clientX >= bounds.right - 20) enterManualMode();
+      }}
+      onWheel={(event) => {
+        if (event.deltaY !== 0) enterManualMode();
+      }}
+      onTouchStart={(event) => {
+        touchStartRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+      }}
+      onTouchMove={(event) => {
+        const start = touchStartRef.current;
+        if (!start) return;
+        const deltaX = event.touches[0].clientX - start.x;
+        const deltaY = event.touches[0].clientY - start.y;
+        if (Math.abs(deltaY) > 8 && Math.abs(deltaY) > Math.abs(deltaX)) enterManualMode();
+      }}
+      onTouchEnd={() => {
+        touchStartRef.current = null;
+      }}
+      onKeyDown={(event) => {
+        if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
+          event.stopPropagation();
+          enterManualMode();
+        }
+      }}
     >
       <article className="letter-track" ref={trackRef}>
         <div className="letter-ornament" aria-hidden="true" />
@@ -256,12 +299,14 @@ export function SceneContent({
   reducedMotion,
   paused,
   onVisualComplete,
+  onManualScroll,
   spokenCharacterIndex,
 }: {
   scene: Exclude<SceneId, "opening">;
   reducedMotion: boolean;
   paused: boolean;
   onVisualComplete: () => void;
+  onManualScroll: () => void;
   spokenCharacterIndex: number | null;
 }) {
   const { personal, education, professional, family, personalLife, preferences } = biodata;
@@ -469,6 +514,7 @@ export function SceneContent({
           reducedMotion={reducedMotion}
           paused={paused}
           onComplete={onVisualComplete}
+          onManualScroll={onManualScroll}
           narrationText={biodata.narration.preferences?.text ?? ""}
           spokenCharacterIndex={spokenCharacterIndex}
         />

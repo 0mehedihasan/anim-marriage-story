@@ -150,6 +150,10 @@ export function MarriageExperience() {
   }, [autoPlay, isPaused, isSpeaking, pause, resume]);
 
   const completeVisualScene = useCallback(() => setVisualEnded("preferences"), []);
+  const pauseForManualScroll = useCallback(() => {
+    setAutoPlay(false);
+    if (isSpeaking) pause();
+  }, [isSpeaking, pause]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -252,6 +256,7 @@ export function MarriageExperience() {
               reducedMotion={reducedMotion}
               paused={!autoPlay}
               onVisualComplete={completeVisualScene}
+              onManualScroll={pauseForManualScroll}
               spokenCharacterIndex={scene === "preferences" ? spokenCharacterIndex : null}
             />}
           </AnimatePresence>
