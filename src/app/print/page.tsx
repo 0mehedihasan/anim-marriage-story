@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { biodata } from "@/data/biodata";
 
 function PrintSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -23,10 +24,12 @@ export default function PrintPage() {
       <div className="print-toolbar"><Link href="/">← Return to the story</Link><button onClick={() => window.print()}>Print / Save PDF</button></div>
       <article className="print-document">
         <header className="print-header">
-          <span className="print-monogram">AB</span>
-          <p>Marriage Biodata</p>
-          <h1>{personal.fullName}</h1>
-          <span className="print-rule" />
+          <Image className="print-profile-photo" src="/anim-profile.jpeg" alt={`Portrait of ${personal.fullName}`} width={100} height={150} />
+          <div>
+            <p>Marriage Biodata</p>
+            <h1>{personal.fullName}</h1>
+            <span className="print-rule" />
+          </div>
         </header>
         <PrintSection title="Personal Information">
           <PrintRow label="Nickname" value={personal.nickname} />
@@ -47,6 +50,18 @@ export default function PrintPage() {
           <PrintRow label="Institution" value={education.institution} />
           <PrintRow label="Passing year" value={education.passingYear} />
           <PrintRow label="Result" value={education.result} />
+          {education.previousQualifications.map((qualification) => (
+            <PrintRow
+              key={qualification.qualification}
+              label={qualification.qualification}
+              value={`${qualification.institution} · ${qualification.result} · ${qualification.passingYear}`}
+            />
+          ))}
+          <PrintRow label="Publication" value={education.publication.title} />
+          <PrintRow label="Publication status" value={`${education.publication.status} · ${education.publication.date}`} />
+          {education.skills.map((group) => (
+            <PrintRow key={group.category} label={group.category} value={group.items.join(", ")} />
+          ))}
         </PrintSection>}
         {showProfessional && <PrintSection title="Professional Information">
           <PrintRow label="Occupation" value={professional.currentOccupation} />
@@ -60,7 +75,7 @@ export default function PrintPage() {
           <PrintRow label="Mother" value={`${family.mother.name} · ${family.mother.occupation}`} />
           <PrintRow label="Brothers" value={family.brothers} />
           <PrintRow label="Sisters" value={family.sisters} />
-          {family.sisters === 1 && <PrintRow label="Older sister" value={`${family.olderSister.maritalStatus} · ${family.olderSister.children} child`} />}
+          {family.sisters === 1 && <PrintRow label="Older sister" value={`${family.olderSister.name} · ${family.olderSister.maritalStatus} · ${family.olderSister.children} child`} />}
           {family.sisters === 1 && <PrintRow label="Brother-in-law" value={`${family.olderSister.spouseOccupation} · ${family.olderSister.spouseLocation}`} />}
           <PrintRow label="Sibling position" value={family.siblingPosition} />
           <PrintRow label="Family residence" value={family.familyResidence} />

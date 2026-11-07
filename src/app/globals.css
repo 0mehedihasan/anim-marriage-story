@@ -117,16 +117,9 @@ a { color: inherit; }
 .ornament-line i { display: none; }
 
 .intro-layout { display: grid; max-width: 1040px; margin: auto; grid-template-columns: minmax(270px, .75fr) 1.25fr; align-items: center; gap: clamp(44px, 8vw, 124px); }
-.portrait-frame { position: relative; width: min(100%, 340px); justify-self: center; padding: 12px; border-radius: 28px; background: var(--paper); box-shadow: var(--card-shadow); }
-.portrait-frame::before { content: ""; position: absolute; z-index: -1; inset: 18px -14px -14px 18px; border-radius: 28px; background: var(--blush); }
-.portrait-arch { position: relative; display: grid; aspect-ratio: .8; overflow: hidden; place-items: center; border-radius: 160px 160px 18px 18px; background: linear-gradient(160deg, #135a48, var(--emerald-deep)); }
-.portrait-arch::before, .portrait-arch::after { content: ""; position: absolute; width: 84%; height: 84%; border: 1px solid rgba(222,197,150,.28); border-radius: 50%; }
-.portrait-arch::after { width: 66%; height: 66%; border-color: rgba(222,197,150,.16); }
-.portrait-pattern { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(255,255,255,.12), transparent 60%); }
-.portrait-monogram { z-index: 1; color: var(--gold-light); font-family: var(--serif); font-size: clamp(80px, 9vw, 120px); line-height: 1; }
-.portrait-caption { position: absolute; z-index: 1; bottom: 22px; color: rgba(250,247,242,.62); font-size: 9px; font-weight: 600; letter-spacing: .18em; }
-.portrait-index { display: none; }
-.portrait-index i { width: 20px; height: 1px; background: var(--gold); }
+.portrait-frame { position: relative; width: min(100%, 340px); justify-self: center; padding: 8px; border-radius: 28px; background: var(--paper); box-shadow: var(--card-shadow); }
+.portrait-arch { position: relative; aspect-ratio: .8; overflow: hidden; border-radius: 22px; background: var(--emerald-soft); }
+.portrait-image { object-fit: cover; object-position: center 34%; }
 .intro-copy { max-width: 650px; }
 .intro-copy .eyebrow { justify-content: flex-start; }
 .intro-copy h1 { max-width: 700px; margin: 14px 0 10px; color: var(--espresso); font-family: var(--serif); font-size: clamp(44px, 4.6vw, 66px); font-weight: 500; line-height: 1.04; letter-spacing: -.02em; }
@@ -164,17 +157,33 @@ a { color: inherit; }
 .quiet-note p { margin: 0; color: var(--ink-soft); font-family: var(--serif); font-size: 21px; font-weight: 500; line-height: 1.45; }
 .note-mark { display: block; margin-bottom: 6px; color: var(--rose); font-family: var(--serif); font-size: 44px; line-height: .6; }
 
-.empty-journey { width: min(720px, 100%); margin: 0 auto; padding: 34px 36px; border-radius: 22px; background: var(--paper); box-shadow: var(--card-shadow); text-align: center; }
-.journey-icon { display: grid; width: 56px; height: 56px; margin: 0 auto 20px; place-items: center; border-radius: 16px; background: var(--emerald-soft); color: var(--emerald); }
-.journey-track { position: relative; display: flex; justify-content: space-between; width: 76%; margin: 0 auto; border-top: 1px solid rgba(176,138,82,.4); }
-.journey-track i { position: relative; top: -4px; width: 8px; height: 8px; border: 1px solid var(--gold); border-radius: 50%; background: var(--ivory); }
-.journey-placeholders { display: flex; justify-content: space-between; width: 90%; margin: 11px auto 0; color: var(--muted); font-family: var(--serif); font-size: 17px; font-weight: 500; }
-.data-state { display: inline-flex; align-items: center; gap: 7px; margin: 29px 0 0; color: var(--muted); font-size: 13px; font-weight: 500; }
-.data-state span { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
-.detail-list, .career-details { width: min(480px, 100%); margin: 24px auto 0; text-align: left; }
-.detail-list div, .career-details div { display: flex; justify-content: space-between; gap: 20px; padding: 12px 0; border-top: 1px solid var(--line-soft); }
-.detail-list dt, .career-details dt { color: var(--muted); font-size: 13px; font-weight: 500; }
-.detail-list dd, .career-details dd { margin: 0; color: var(--espresso); font-family: var(--serif); font-size: 17px; font-weight: 500; text-align: right; }
+.career-details { width: min(480px, 100%); margin: 24px auto 0; text-align: left; }
+.career-details div { display: flex; justify-content: space-between; gap: 20px; padding: 12px 0; border-top: 1px solid var(--line-soft); }
+.career-details dt { color: var(--muted); font-size: 13px; font-weight: 500; }
+.career-details dd { margin: 0; color: var(--espresso); font-family: var(--serif); font-size: 17px; font-weight: 500; text-align: right; }
+
+.scene-content--education { max-height: calc(100svh - 190px); overflow-y: auto; scrollbar-color: var(--emerald-soft) transparent; scrollbar-width: thin; }
+.education-layout { display: grid; width: min(960px, 100%); margin: 0 auto; grid-template-columns: 1fr 1fr; gap: 16px; }
+.education-card { min-width: 0; padding: 24px; border-radius: var(--radius); background: var(--paper); box-shadow: var(--card-shadow); }
+.education-card-label { margin: 0 0 10px; color: var(--gold-ink); font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.education-card--qualifications h2 { margin: 0; color: var(--espresso); font-family: var(--serif); font-size: 27px; font-weight: 500; line-height: 1.25; }
+.education-institution { margin: 8px 0 0; color: var(--ink-soft); font-size: 17px; line-height: 1.5; }
+.education-result { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+.education-result div { min-width: 120px; }
+.education-result dt { color: var(--muted); font-size: 13px; font-weight: 600; }
+.education-result dd { margin: 4px 0 0; color: var(--ink-soft); font-family: var(--sans); font-size: 16px; font-weight: 600; }
+.previous-qualifications { margin-top: 20px; }
+.previous-qualifications h3 { margin: 0 0 10px; color: var(--emerald); font-family: var(--serif); font-size: 20px; font-weight: 500; }
+.previous-qualifications article { padding: 12px 0; border-top: 1px solid var(--line-soft); }
+.previous-qualifications h4 { margin: 0; color: var(--espresso); font-size: 16px; font-weight: 700; }
+.previous-qualifications p { margin: 4px 0 0; color: var(--ink-soft); font-size: 16px; line-height: 1.5; }
+.education-side { display: flex; flex-direction: column; gap: 16px; }
+.publication-title { margin: 0; color: var(--espresso); font-family: var(--serif); font-size: 20px; font-weight: 500; line-height: 1.4; }
+.publication-status { margin: 12px 0 0; color: var(--muted); font-size: 16px; line-height: 1.5; }
+.skill-groups { display: grid; gap: 12px; }
+.skill-group { padding-top: 10px; border-top: 1px solid var(--line-soft); }
+.skill-group h3 { margin: 0; color: var(--emerald); font-size: 15px; font-weight: 700; }
+.skill-group p { margin: 4px 0 0; color: var(--ink-soft); font-size: 16px; line-height: 1.55; }
 
 .career-stage { position: relative; width: min(720px, 100%); min-height: 245px; margin: 0 auto; padding: 36px; overflow: hidden; border-radius: 22px; background: var(--paper); box-shadow: var(--card-shadow); text-align: center; }
 .career-grid { position: absolute; inset: 0 0 auto; height: 6px; background: linear-gradient(90deg, var(--emerald), var(--gold), var(--rose)); }
@@ -253,11 +262,11 @@ a { color: inherit; }
 .print-toolbar a { color: var(--burgundy); font-size: 12px; text-decoration: none; }
 .print-toolbar button { padding: 9px 16px; border: 0; border-radius: 999px; background: var(--emerald); color: white; cursor: pointer; font-size: 11px; font-weight: 600; }
 .print-document { width: min(790px,100%); min-height: 1040px; margin: auto; padding: 52px 62px 38px; border-top: 6px solid var(--emerald); background: white; box-shadow: 0 4px 24px rgba(8,53,42,.1); }
-.print-header { padding-bottom: 24px; border-bottom: 1px solid var(--line); text-align: center; }
-.print-monogram { display: grid; width: 48px; height: 48px; margin: auto; place-items: center; border-radius: 50%; background: var(--emerald); color: var(--gold-light); font-family: var(--serif); }
-.print-header > p { margin: 13px 0 5px; color: var(--gold-ink); font-size: 9px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
-.print-header h1 { margin: 0; color: var(--burgundy); font-family: var(--serif); font-size: 34px; font-weight: 400; }
-.print-rule { display: block; width: 65px; height: 1px; margin: 15px auto 0; background: var(--gold); }
+.print-header { display: flex; align-items: center; justify-content: center; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid var(--line); text-align: left; }
+.print-profile-photo { width: 82px; height: 123px; border-radius: 14px; object-fit: cover; object-position: center 34%; }
+.print-header > div > p { margin: 0 0 5px; color: var(--gold-ink); font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
+.print-header h1 { margin: 0; color: var(--emerald); font-family: var(--serif); font-size: 34px; font-weight: 400; }
+.print-rule { display: block; width: 65px; height: 1px; margin-top: 15px; background: var(--gold); }
 .print-section { margin-top: 21px; break-inside: avoid; }
 .print-section h2 { margin: 0 0 6px; padding-bottom: 5px; border-bottom: 1px solid var(--line-soft); color: var(--emerald); font-family: var(--serif); font-size: 17px; font-weight: 500; }
 .print-section dl { margin: 0; }
@@ -300,11 +309,10 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid
 .intro-facts span { font-size: 13px; }
 .intro-facts strong { font-size: 26px; }
 .narration-hint { font-size: 15px; }
-.portrait-caption { font-size: 11px; }
 .fact-item small, .tag-group small, .career-label, .family-member small, .personal-feature small { font-size: 13px; }
 .fact-item strong { font-size: 21px; }
-.detail-list dt, .career-details dt { font-size: 15px; }
-.detail-list dd, .career-details dd { font-size: 18px; }
+.career-details dt { font-size: 15px; }
+.career-details dd { font-size: 18px; }
 .family-member p, .family-detail { font-size: 16px !important; }
 .personal-feature p, .tag-group span { font-size: 16px; }
 .expectation-list span { font-size: 15px; }
@@ -354,11 +362,8 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid
   .story-stage { display: block; padding: 10px 23px 15px; }
   .scene-content { min-height: min(70svh, 650px); display: flex; flex-direction: column; justify-content: center; }
   .intro-layout { display: flex; flex-direction: column; gap: 20px; text-align: center; }
-  .portrait-frame { width: 150px; padding: 7px 7px 20px; }
+  .portrait-frame { width: 150px; padding: 7px; }
   .portrait-arch { aspect-ratio: .83; }
-  .portrait-monogram { font-size: 68px; }
-  .portrait-caption { bottom: 14px; font-size: 9px; }
-  .portrait-index { right: 8px; bottom: 3px; font-size: 7px; }
   .intro-copy .eyebrow { justify-content: center; font-size: 12px; }
   .intro-copy h1 { margin: 10px auto; font-size: clamp(38px, 10vw, 48px); line-height: 1.05; }
   .intro-description { max-width: 370px; margin: auto; font-size: 18px; font-weight: 500; line-height: 1.42; }
@@ -380,7 +385,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid
   .intro-facts { gap: 6px; }
   .intro-facts div { padding: 10px 6px; text-align: center; }
   .quiet-note { grid-column: 1 / -1; }
-  .empty-journey, .career-stage, .future-statement { padding: 24px 18px; }
+  .career-stage, .future-statement { padding: 24px 18px; }
   .about-age-number { font-size: 56px; }
   .about-date { margin-top: 8px; font-size: 13px; }
   .fact-list { gap: 12px; }
@@ -391,9 +396,6 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid
   .quiet-note { padding: 10px 0 10px 12px; }
   .quiet-note p { font-size: 15px; }
   .note-mark { font-size: 25px; }
-  .empty-journey { padding: 20px 8px; }
-  .journey-icon { width: 42px; height: 42px; margin-bottom: 20px; }
-  .journey-placeholders { width: 100%; font-size: 13px; }
   .career-stage { min-height: 210px; padding: 23px 14px; }
   .career-stage h2 { font-size: 28px; }
   .family-member { padding: 11px 6px 13px; }
@@ -425,6 +427,10 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid
   .print-page { padding: 12px; }
   .print-document { min-height: 0; padding: 32px 24px; }
   .print-header h1 { font-size: 28px; }
+  .scene-content--education { max-height: calc(100svh - 190px); }
+  .education-layout { grid-template-columns: 1fr; }
+  .education-card { padding: 20px; }
+  .education-card--qualifications h2 { font-size: 24px; }
 }
 @media (max-width: 370px) {
   .experience-header { padding-inline: 15px; }
@@ -445,6 +451,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid
   .print-page { min-height: auto; padding: 0; background: white; }
   .print-toolbar { display: none; }
   .print-document { width: auto; min-height: auto; padding: 0; box-shadow: none; }
+  .scene-content--education { max-height: none; overflow: visible; }
   .print-section { margin-top: 14px; }
   .print-section h2 { font-size: 15px; }
   .print-row { padding: 3px 0; font-size: 10px; }

@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
-import { ArrowUpRight, BookOpen, BriefcaseBusiness, Compass, Droplet, Feather, Heart, MapPin, Ruler, Scale, UserRound } from "lucide-react";
+import { ArrowUpRight, BriefcaseBusiness, Compass, Droplet, Feather, Heart, MapPin, Ruler, Scale, UserRound } from "lucide-react";
 import { biodata } from "@/data/biodata";
 import type { SceneId } from "@/types/biodata";
 
@@ -19,10 +20,6 @@ function SceneHeading({ eyebrow, title, note }: { eyebrow: string; title: string
       <span className="ornament-line" aria-hidden="true"><i /></span>
     </motion.header>
   );
-}
-
-function DataState({ children = "To be shared" }: { children?: string }) {
-  return <p className="data-state"><span aria-hidden="true" />{children}</p>;
 }
 
 function Fact({ icon: Icon, label, value }: { icon: typeof UserRound; label: string; value: string }) {
@@ -64,12 +61,10 @@ function FamilyMember({ kind, className = "", children }: { kind: "man" | "woman
 
 export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) {
   const { personal, education, professional, family, personalLife, preferences } = biodata;
-  const hasEducation = [education.highestEducation, education.degree, education.subject, education.institution, education.passingYear, education.result].some(Boolean);
   const educationSummary = [
     education.subject?.replace("Computer Science and Engineering", "Computer Science & Engineering"),
     education.institution ? "BUBT" : "",
     education.passingYear,
-    education.result,
   ].filter(Boolean).join(" · ");
 
   return (
@@ -83,13 +78,17 @@ export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) 
       {scene === "introduction" && (
         <>
           <div className="intro-layout">
-            <motion.div className="portrait-frame" variants={reveal} aria-label="Portrait placeholder">
+            <motion.div className="portrait-frame" variants={reveal}>
               <div className="portrait-arch">
-                <div className="portrait-pattern" />
-                <span className="portrait-monogram">AB</span>
-                <span className="portrait-caption">PHOTO ON REQUEST</span>
+                <Image
+                  src="/anim-profile.jpeg"
+                  alt={`Portrait of ${personal.fullName}`}
+                  fill
+                  priority
+                  sizes="(max-width: 620px) 150px, (max-width: 900px) 32vw, 340px"
+                  className="portrait-image"
+                />
               </div>
-              <span className="portrait-index">01 <i /> 09</span>
             </motion.div>
             <div className="intro-copy">
               <motion.p className="eyebrow" variants={reveal}><span />Marriage Biodata</motion.p>
@@ -143,23 +142,45 @@ export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) 
 
       {scene === "education" && (
         <>
-          <SceneHeading eyebrow="Where he studied" title="His Studies" note={hasEducation ? `${personal.nickname} studied Computer Science and Engineering at BUBT in Dhaka, and completed his degree in ${education.passingYear}.` : "Details will be added soon."} />
-          <motion.div className="empty-journey" variants={reveal}>
-            <span className="journey-icon"><BookOpen size={24} strokeWidth={1.35} aria-hidden="true" /></span>
-            {!hasEducation && <>
-              <div className="journey-track"><i /><i /><i /></div>
-              <div className="journey-placeholders"><span>Education</span><span>Qualifications</span><span>Institution</span></div>
-              <DataState />
-            </>}
-            {hasEducation && (
-              <dl className="detail-list">
-                {education.degree && <div><dt>Degree</dt><dd>{education.degree}</dd></div>}
-                {education.subject && <div><dt>Subject</dt><dd>{education.subject}</dd></div>}
-                {education.institution && <div><dt>Institution</dt><dd>{education.institution}</dd></div>}
-                {education.passingYear && <div><dt>Passing year</dt><dd>{education.passingYear}</dd></div>}
-                {education.result && <div><dt>Result</dt><dd>{education.result}</dd></div>}
+          <SceneHeading eyebrow="Studies and research" title="His Education" note={`${personal.nickname} studied Computer Science and Engineering at BUBT. Here are his qualifications, research, and technical skills.`} />
+          <motion.div className="education-layout" variants={reveal}>
+            <section className="education-card education-card--qualifications">
+              <p className="education-card-label">University</p>
+              <h2>{education.degree} in {education.subject}</h2>
+              <p className="education-institution">{education.institution}</p>
+              <dl className="education-result">
+                <div><dt>Completed</dt><dd>{education.passingYear}</dd></div>
+                <div><dt>Result</dt><dd>{education.result}</dd></div>
               </dl>
-            )}
+              <div className="previous-qualifications">
+                <h3>Earlier studies</h3>
+                {education.previousQualifications.map((qualification) => (
+                  <article key={qualification.qualification}>
+                    <h4>{qualification.qualification}</h4>
+                    <p>{qualification.institution} · {qualification.passingYear}</p>
+                    <p>{qualification.result}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+            <div className="education-side">
+              <section className="education-card">
+                <p className="education-card-label">Publication</p>
+                <h3 className="publication-title">{education.publication.title}</h3>
+                <p className="publication-status">{education.publication.status} · {education.publication.date}</p>
+              </section>
+              <section className="education-card">
+                <p className="education-card-label">Research and software development skills</p>
+                <div className="skill-groups">
+                  {education.skills.map((group) => (
+                    <div className="skill-group" key={group.category}>
+                      <h3>{group.category}</h3>
+                      <p>{group.items.join(", ")}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
           </motion.div>
         </>
       )}
@@ -203,9 +224,9 @@ export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) 
                 <small>Son</small><h2>{personal.nickname}</h2><p>Younger of two</p>
               </FamilyMember>
               {family.sisters > 0 && <FamilyMember kind="woman" className="family-member--child">
-                <small>{family.sisters === 1 ? "Older sister" : "Sisters"}</small><h2>{family.sisters === 1 ? family.olderSister.maritalStatus : `${family.sisters} sisters`}</h2>
+                <small>{family.sisters === 1 ? "Older sister" : "Sisters"}</small><h2>{family.sisters === 1 ? family.olderSister.name : `${family.sisters} sisters`}</h2>
                 {family.sisters === 1 && <>
-                  <p>{family.olderSister.children === 1 ? "One child" : `${family.olderSister.children} children`}</p>
+                  <p>{family.olderSister.maritalStatus} · {family.olderSister.children === 1 ? "One child" : `${family.olderSister.children} children`}</p>
                   <p className="family-detail">Husband: {family.olderSister.spouseOccupation.toLowerCase()}, {family.olderSister.spouseLocation}</p>
                 </>}
               </FamilyMember>}

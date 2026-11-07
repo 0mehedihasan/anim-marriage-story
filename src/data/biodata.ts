@@ -15,12 +15,37 @@ export const biodata: Biodata = {
     hometown: "Jamalpur",
   },
   education: {
-    highestEducation: "",
-    degree: "",
+    highestEducation: "Bachelor of Science",
+    degree: "B.Sc.",
     subject: "Computer Science and Engineering",
     institution: "Bangladesh University of Business and Technology (BUBT)",
     passingYear: "December 2025",
-    result: "CGPA 2.92",
+    result: "CGPA 2.81",
+    previousQualifications: [
+      {
+        qualification: "Higher Secondary Certificate (H.S.C.)",
+        institution: "Milestone College Uttara",
+        result: "GPA 4.42 out of 5.00",
+        passingYear: "2019",
+      },
+      {
+        qualification: "Secondary School Certificate (S.S.C.)",
+        institution: "Jamalpur Zilla School",
+        result: "GPA 4.44 out of 5.00",
+        passingYear: "2017",
+      },
+    ],
+    publication: {
+      title: "X-GNN: An Explainable Ensemble Graph–Transformer Framework for Human Protein–Protein Interaction Prediction",
+      status: "Accepted for oral presentation",
+      date: "January 31, 2026",
+    },
+    skills: [
+      { category: "Programming", items: ["C", "C++", "C#", "Java", "PHP", "Python", "JavaScript"] },
+      { category: "Web", items: ["HTML", "CSS", "JSP", "Servlet", "JDBC"] },
+      { category: "Databases", items: ["MySQL", "MS SQL Server", "Firebase"] },
+      { category: "Data science", items: ["NumPy", "Pandas", "Seaborn", "Matplotlib", "Scikit-learn", "PyTorch", "Anaconda"] },
+    ],
   },
   professional: {
     currentOccupation: "",
@@ -36,6 +61,7 @@ export const biodata: Biodata = {
     brothers: 0,
     sisters: 1,
     olderSister: {
+      name: "Fatema tuz jahura Rima",
       maritalStatus: "Married",
       children: 1,
       spouseOccupation: "Businessman",
@@ -73,11 +99,11 @@ export const biodata: Biodata = {
       language: "en-US",
     },
     education: {
-      text: "Anim studied Computer Science and Engineering at Bangladesh University of Business and Technology in Dhaka, and completed his degree in December 2025.",
+      text: "Anim completed a Bachelor of Science in Computer Science and Engineering at Bangladesh University of Business and Technology in December 2025, with a CGPA of 2.81. Before that, he completed his Higher Secondary Certificate at Milestone College Uttara in 2019, with a GPA of 4.42 out of 5, and his Secondary School Certificate at Jamalpur Zilla School in 2017, with a GPA of 4.44 out of 5. He also co-authored a research paper on explainable graph and transformer methods for predicting human protein interactions, accepted for oral presentation on January 31, 2026. His listed technical skills cover programming, web development, databases, and data science.",
       language: "en-US",
     },
     family: {
-      text: "Through every year of study, his family stood behind him. His father, Md Bazlur Rahman, is now retired. His mother, Nure Zannat, looks after the home. His older sister is married, with one child, and her husband runs a business in Uttara.",
+      text: "Through every year of study, his family stood behind him. His father, Md Bazlur Rahman, is now retired. His mother, Nure Zannat, looks after the home. His older sister, Fatema tuz jahura Rima, is married, with one child, and her husband runs a business in Uttara.",
       language: "en-US",
     },
     personal: {

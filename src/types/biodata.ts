@@ -24,6 +24,21 @@ export interface Biodata {
     institution: string;
     passingYear: string;
     result: string;
+    previousQualifications: {
+      qualification: string;
+      institution: string;
+      result: string;
+      passingYear: string;
+    }[];
+    publication: {
+      title: string;
+      status: string;
+      date: string;
+    };
+    skills: {
+      category: string;
+      items: string[];
+    }[];
   };
   professional: {
     currentOccupation: string;
@@ -39,6 +54,7 @@ export interface Biodata {
     brothers: number;
     sisters: number;
     olderSister: {
+      name: string;
       maritalStatus: string;
       children: number;
       spouseOccupation: string;
