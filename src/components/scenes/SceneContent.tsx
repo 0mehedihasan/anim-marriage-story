@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
+import gsap from "gsap";
 import { ArrowUpRight, BriefcaseBusiness, Compass, Droplet, Feather, Heart, MapPin, Ruler, Scale, UserRound } from "lucide-react";
 import { biodata } from "@/data/biodata";
 import type { SceneId } from "@/types/biodata";
@@ -50,6 +52,26 @@ function WomanIcon() {
   );
 }
 
+function renderSpokenText(text: string, narrationStart: number, spokenCharacterIndex: number | null) {
+  if (narrationStart < 0 || spokenCharacterIndex === null) return text;
+
+  const localIndex = spokenCharacterIndex - narrationStart;
+  const words = text.matchAll(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu);
+  for (const word of words) {
+    const start = word.index;
+    if (start === undefined || localIndex < start || localIndex >= start + word[0].length) continue;
+    const end = start + word[0].length;
+    return (
+      <>
+        {text.slice(0, start)}
+        <span className="letter-spoken-word">{word[0]}</span>
+        {text.slice(end)}
+      </>
+    );
+  }
+  return text;
+}
+
 function FamilyMember({ kind, className = "", children }: { kind: "man" | "woman"; className?: string; children: React.ReactNode }) {
   return (
     <article className={`family-member ${className}`}>
@@ -59,7 +81,189 @@ function FamilyMember({ kind, className = "", children }: { kind: "man" | "woman
   );
 }
 
-export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) {
+function CinematicLetter({
+  preferences,
+  reducedMotion,
+  paused,
+  onComplete,
+  narrationText,
+  spokenCharacterIndex,
+}: {
+  preferences: typeof biodata.preferences;
+  reducedMotion: boolean;
+  paused: boolean;
+  onComplete: () => void;
+  narrationText: string;
+  spokenCharacterIndex: number | null;
+}) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const partnershipParagraphs = preferences.introduction.split("\n\n");
+  const daughterParagraphs = preferences.partnerPortrait.split("\n\n");
+  const partnershipTitle = "A Promise of Partnership";
+  const daughterTitle = "A Little About Your Daughter";
+  const narrationSegments = [partnershipTitle, ...partnershipParagraphs, daughterTitle, ...daughterParagraphs];
+  const narrationStarts = narrationSegments.reduce<{ cursor: number; starts: number[] }>((result, segment) => {
+    const start = narrationText.indexOf(segment, result.cursor);
+    return {
+      cursor: start >= 0 ? start + segment.length : result.cursor,
+      starts: [...result.starts, start],
+    };
+  }, { cursor: 0, starts: [] }).starts;
+  const partnershipTitleStart = narrationStarts[0];
+  const partnershipStarts = narrationStarts.slice(1, partnershipParagraphs.length + 1);
+  const daughterTitleStart = narrationStarts[partnershipParagraphs.length + 1];
+  const daughterStarts = narrationStarts.slice(partnershipParagraphs.length + 2);
+
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    if (!viewport || !track) return;
+
+    const revealedElements = Array.from(track.querySelectorAll<HTMLElement>("[data-letter-reveal]"));
+    let active = true;
+    let completed = false;
+    const completeOnce = () => {
+      if (!active || completed) return;
+      completed = true;
+      onComplete();
+    };
+
+    if (reducedMotion) {
+      gsap.set(viewport, { opacity: 1 });
+      gsap.set(revealedElements, { opacity: 1, y: 0 });
+      const onScroll = () => {
+        if (viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight - 4) completeOnce();
+      };
+      const frame = window.requestAnimationFrame(onScroll);
+      viewport.addEventListener("scroll", onScroll, { passive: true });
+
+      return () => {
+        active = false;
+        window.cancelAnimationFrame(frame);
+        viewport.removeEventListener("scroll", onScroll);
+      };
+    }
+
+    gsap.set(viewport, { opacity: 0 });
+    gsap.set(revealedElements, { opacity: 0, y: 18 });
+
+    const pixelsPerSecond = 8.5;
+    const viewportHeight = viewport.clientHeight;
+    const finalParagraph = revealedElements.at(-1);
+    const distance = finalParagraph
+      ? Math.max(0, finalParagraph.offsetTop + finalParagraph.offsetHeight - viewportHeight * 0.72)
+      : 0;
+    const scrollStart = 1.3;
+    const scrollDuration = distance / pixelsPerSecond;
+    const timeline = gsap.timeline({
+      paused: true,
+      onComplete: completeOnce,
+    });
+
+    timeline
+      .to(viewport, { opacity: 1, duration: 1.35, ease: "power1.out" }, 0)
+      .fromTo(
+        track,
+        { y: 0 },
+        { y: -distance, duration: scrollDuration, ease: "none" },
+        scrollStart,
+      );
+
+    revealedElements.forEach((element, index) => {
+      const isHeading = element.matches(".letter-title, .letter-section-title");
+      const revealAt = isHeading
+        ? index === 0 ? 0.35 : Math.max(scrollStart, scrollStart + (element.offsetTop - viewportHeight * 0.78) / pixelsPerSecond)
+        : Math.max(scrollStart, scrollStart + (element.offsetTop - viewportHeight * 0.82) / pixelsPerSecond);
+
+      timeline.fromTo(
+        element,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 1.1, ease: "power2.out" },
+        revealAt,
+      );
+    });
+
+    timeline.to({}, { duration: 3.5 }, scrollStart + scrollDuration);
+    timelineRef.current = timeline;
+
+    return () => {
+      active = false;
+      timeline.kill();
+      timelineRef.current = null;
+      gsap.set([viewport, track, ...revealedElements], { clearProps: "all" });
+    };
+  }, [onComplete, preferences, reducedMotion]);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    timelineRef.current?.paused(paused);
+  }, [paused, reducedMotion]);
+
+  const renderParagraph = (paragraph: string, key: string, narrationStart: number, finalParagraph = false) => {
+    if (!finalParagraph) {
+      return (
+        <p className="letter-paragraph" data-letter-reveal key={key}>
+          {renderSpokenText(paragraph, narrationStart, spokenCharacterIndex)}
+        </p>
+      );
+    }
+    const [before, after] = paragraph.split(preferences.emphasis);
+    const emphasisStart = narrationStart + before.length;
+    return (
+      <p className="letter-paragraph" data-letter-reveal key={key}>
+        {renderSpokenText(before, narrationStart, spokenCharacterIndex)}
+        <strong>{renderSpokenText(preferences.emphasis, emphasisStart, spokenCharacterIndex)}</strong>
+        {renderSpokenText(after, emphasisStart + preferences.emphasis.length, spokenCharacterIndex)}
+      </p>
+    );
+  };
+
+  return (
+    <div
+      className={`letter-viewport${reducedMotion ? " letter-viewport--reduced" : ""}`}
+      ref={viewportRef}
+      aria-labelledby="partner-letter-title"
+      tabIndex={0}
+    >
+      <article className="letter-track" ref={trackRef}>
+        <div className="letter-ornament" aria-hidden="true" />
+        <h1 className="letter-title" id="partner-letter-title" data-letter-reveal>
+          {renderSpokenText(partnershipTitle, partnershipTitleStart, spokenCharacterIndex)}
+        </h1>
+        <section className="letter-section" aria-labelledby="partner-letter-title">
+          {partnershipParagraphs.map((paragraph, index) =>
+            renderParagraph(paragraph, `partnership-${index}`, partnershipStarts[index]),
+          )}
+        </section>
+        <section className="letter-section" aria-labelledby="daughter-heading">
+          <h2 className="letter-section-title" id="daughter-heading" data-letter-reveal>
+            {renderSpokenText(daughterTitle, daughterTitleStart, spokenCharacterIndex)}
+          </h2>
+          {daughterParagraphs.map((paragraph, index) =>
+            renderParagraph(paragraph, `daughter-${index}`, daughterStarts[index], index === daughterParagraphs.length - 1),
+          )}
+        </section>
+        <div className="letter-ornament letter-ornament--end" aria-hidden="true" />
+      </article>
+    </div>
+  );
+}
+
+export function SceneContent({
+  scene,
+  reducedMotion,
+  paused,
+  onVisualComplete,
+  spokenCharacterIndex,
+}: {
+  scene: Exclude<SceneId, "opening">;
+  reducedMotion: boolean;
+  paused: boolean;
+  onVisualComplete: () => void;
+  spokenCharacterIndex: number | null;
+}) {
   const { personal, education, professional, family, personalLife, preferences } = biodata;
   const educationSummary = [
     education.subject?.replace("Computer Science and Engineering", "Computer Science & Engineering"),
@@ -260,19 +464,14 @@ export function SceneContent({ scene }: { scene: Exclude<SceneId, "opening"> }) 
       )}
 
       {scene === "preferences" && (
-        <>
-          <SceneHeading eyebrow="In his own words" title="A Note to Her Family" note={`${personal.nickname} wanted to end with a few words of his own, written to her parents.`} />
-          <motion.div className="future-statement" variants={reveal}>
-            <span className="future-rule" />
-            <p className="future-copy">{preferences.introduction || "A few words will be added soon."}</p>
-            {preferences.partnerPortrait && <div className="future-portrait">
-              <p className="eyebrow"><span />A little about her, as he sees her</p>
-              <p>{preferences.partnerPortrait}</p>
-            </div>}
-            {preferences.expectations.length > 0 && <div className="expectation-list">{preferences.expectations.map((item) => <span key={item}>{item}</span>)}</div>}
-            <span className="future-signature">{personal.nickname}</span>
-          </motion.div>
-        </>
+        <CinematicLetter
+          preferences={preferences}
+          reducedMotion={reducedMotion}
+          paused={paused}
+          onComplete={onVisualComplete}
+          narrationText={biodata.narration.preferences?.text ?? ""}
+          spokenCharacterIndex={spokenCharacterIndex}
+        />
       )}
 
       {scene === "closing" && (

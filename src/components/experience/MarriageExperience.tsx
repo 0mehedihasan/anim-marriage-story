@@ -25,7 +25,7 @@ function getMotionPreference() {
 }
 
 function estimateSpeechMs(text: string) {
-  return Math.max(4500, (text.trim().split(/\s+/).length / 2.15) * 1000 + 2400);
+  return Math.max(4500, (text.trim().split(/\s+/).length / 1.7) * 1000 + 4500);
 }
 
 export function MarriageExperience() {
@@ -35,17 +35,35 @@ export function MarriageExperience() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [autoPlay, setAutoPlay] = useState(true);
   const [speechEnded, setSpeechEnded] = useState<SceneId | null>(null);
+  const [visualEnded, setVisualEnded] = useState<SceneId | null>(null);
   const curtainRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const playbackPaused = useRef(!autoPlay);
   const reducedMotion = useSyncExternalStore(subscribeToMotionPreference, getMotionPreference, () => false);
-  const { selectedLanguage, setSelectedLanguage, isSupported, isSpeaking, isPaused, speak, stop, pause, resume } = useNarrator();
+  const {
+    selectedLanguage,
+    setSelectedLanguage,
+    isSupported,
+    isSpeaking,
+    isPaused,
+    spokenCharacterIndex,
+    speak,
+    stop,
+    pause,
+    resume,
+  } = useNarrator();
   const sceneIndex = scenes.findIndex((item) => item.id === scene);
   const progressIndex = Math.min(Math.max(sceneIndex, 1), scenes.length - 2);
   const speechLine = biodata.narration[narrationForScene(scene)];
 
+  useEffect(() => {
+    playbackPaused.current = !autoPlay;
+  }, [autoPlay]);
+
   const changeScene = useCallback((next: SceneId) => {
     stop();
     setSpeechEnded(null);
+    setVisualEnded(null);
     setScene(next);
   }, [stop]);
 
@@ -82,12 +100,30 @@ export function MarriageExperience() {
 
   useEffect(() => {
     if (!entered || scene === "opening" || !voiceEnabled || !isSupported || !speechLine) return;
-    speak(speechLine, () => setSpeechEnded(scene));
-    return () => stop();
+    let timer: number;
+    const startNarration = () => {
+      if (playbackPaused.current) {
+        timer = window.setTimeout(startNarration, 250);
+        return;
+      }
+      speak(speechLine, () => setSpeechEnded(scene));
+    };
+    timer = window.setTimeout(startNarration, scene === "preferences" ? 850 : 0);
+    return () => {
+      window.clearTimeout(timer);
+      stop();
+    };
   }, [entered, isSupported, scene, speechLine, speak, stop, voiceEnabled]);
 
   useEffect(() => {
     if (!entered || !autoPlay || scene === "opening") return;
+    if (scene === "preferences") {
+      const hasVoice = voiceEnabled && isSupported && speechLine;
+      if (visualEnded !== scene || (hasVoice && speechEnded !== scene)) return;
+      const timer = window.setTimeout(() => changeScene(nextScene(scene, 1)), 3500);
+      return () => window.clearTimeout(timer);
+    }
+
     const currentScene = scenes.find((item) => item.id === scene);
     const hasVoice = voiceEnabled && isSupported && speechLine;
     const delay = hasVoice
@@ -101,7 +137,19 @@ export function MarriageExperience() {
       changeScene(nextScene(scene, 1));
     }, delay);
     return () => window.clearTimeout(timer);
-  }, [autoPlay, changeScene, entered, isSupported, scene, speechEnded, speechLine, voiceEnabled]);
+  }, [autoPlay, changeScene, entered, isSupported, scene, speechEnded, speechLine, visualEnded, voiceEnabled]);
+
+  const togglePlayback = useCallback(() => {
+    if (autoPlay) {
+      setAutoPlay(false);
+      if (isSpeaking) pause();
+    } else {
+      setAutoPlay(true);
+      if (isPaused) resume();
+    }
+  }, [autoPlay, isPaused, isSpeaking, pause, resume]);
+
+  const completeVisualScene = useCallback(() => setVisualEnded("preferences"), []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -111,15 +159,14 @@ export function MarriageExperience() {
       if (event.key === "ArrowRight") { event.preventDefault(); step(1); }
       if (event.code === "Space" && scene !== "opening") {
         event.preventDefault();
-        setAutoPlay((playing) => !playing);
-        if (isPaused) resume(); else if (isSpeaking) pause();
+        togglePlayback();
       }
       if (event.key.toLowerCase() === "m") setVoiceEnabled((enabled) => !enabled);
       if (event.key === "Escape" && document.fullscreenElement) void document.exitFullscreen();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isPaused, isSpeaking, pause, resume, scene, step]);
+  }, [scene, step, togglePlayback]);
 
   useEffect(() => () => {
     stop();
@@ -137,8 +184,9 @@ export function MarriageExperience() {
     setVoiceEnabled(true);
     setEntered(false);
     setCurtainsOpen(false);
-    setScene("opening");
     setSpeechEnded(null);
+    setVisualEnded(null);
+    setScene("opening");
     if (curtainRef.current) gsap.set(curtainRef.current, { xPercent: 0 });
     const right = curtainRef.current?.parentElement?.querySelector<HTMLElement>(".curtain-panel--right");
     if (right) gsap.set(right, { xPercent: 0 });
@@ -156,7 +204,7 @@ export function MarriageExperience() {
   };
 
   return (
-    <main className={`experience${entered ? " experience--entered" : ""}${reducedMotion ? " reduced-motion" : ""}`}>
+    <main className={`experience${entered ? " experience--entered" : ""}${reducedMotion ? " reduced-motion" : ""}${scene === "preferences" ? " experience--letter" : ""}`}>
       <div className="stage-light" aria-hidden="true" />
       <div className="stage-architecture" aria-hidden="true"><div className="stage-arch"><i /><b /></div></div>
       <div className="stage-grain" aria-hidden="true" />
@@ -177,7 +225,7 @@ export function MarriageExperience() {
             <span className="brand-monogram">AB</span><span className="brand-name"><span className="brand-full">{biodata.personal.fullName}</span> <i>{biodata.personal.nickname}</i></span>
           </a>
           <div className="header-controls">
-            <button className={`control-button${autoPlay ? " is-active" : ""}`} onClick={() => setAutoPlay((playing) => !playing)} aria-label={autoPlay ? "Turn autoplay off" : "Turn autoplay on"} aria-pressed={autoPlay}>
+            <button className={`control-button${autoPlay ? " is-active" : ""}`} onClick={togglePlayback} aria-label={autoPlay ? "Pause story" : "Resume story"} aria-pressed={!autoPlay}>
               {autoPlay ? <Pause size={15} /> : <Play size={15} />}<span>Auto Play</span>
             </button>
             <button className={`control-button${voiceEnabled ? " is-active" : ""}`} onClick={() => { setVoiceEnabled((enabled) => !enabled); if (voiceEnabled) stop(); }} aria-label={voiceEnabled ? "Mute narration" : "Enable narration"} aria-pressed={voiceEnabled}>
@@ -196,9 +244,16 @@ export function MarriageExperience() {
           </div>
         </header>
 
-        <section id="story" className={`story-stage${scene === "closing" ? " story-stage--closing" : ""}`} onTouchStart={startTouch} onTouchEnd={endTouch} aria-live="polite">
+        <section id="story" className={`story-stage${scene === "closing" ? " story-stage--closing" : ""}${scene === "preferences" ? " story-stage--preferences" : ""}`} onTouchStart={startTouch} onTouchEnd={endTouch} aria-live="polite">
           <AnimatePresence mode="wait">
-            {scene !== "opening" && <SceneContent key={scene} scene={scene as Exclude<SceneId, "opening">} />}
+            {scene !== "opening" && <SceneContent
+              key={scene}
+              scene={scene as Exclude<SceneId, "opening">}
+              reducedMotion={reducedMotion}
+              paused={!autoPlay}
+              onVisualComplete={completeVisualScene}
+              spokenCharacterIndex={scene === "preferences" ? spokenCharacterIndex : null}
+            />}
           </AnimatePresence>
         </section>
 

@@ -79,10 +79,18 @@ export const biodata: Biodata = {
     otherInformation: "",
   },
   preferences: {
-    introduction:
-      "You have raised your daughter with so much love. My wish is that, after marriage, she never feels she has lost the care of her parents' home. I hope she feels she has gained a partner who will share her joys, sorrows and dreams, and always honour her dignity.",
-    partnerPortrait:
-      "She finds joy in the little things: cake, a favourite song and a touch of playful mischief. The mountains call to her, and she enjoys dressing up and wearing a saree as a way to express her style.",
+    introduction: [
+      "You have raised your daughter with immense love, care, and responsibility. My sincere wish is that, after marriage, she never feels that she has lost the warmth, affection, and sense of belonging of her parents' home. Instead, I hope she feels that she has gained a life partner who will stand beside her with sincerity, responsibility, and respect.",
+      "I believe marriage is not simply a relationship between two individuals. It is a commitment to understand one another, share responsibilities, support each other's dreams, and remain beside each other through both the joyful and difficult chapters of life.",
+      "I want to be a husband who listens to her, respects her opinions and individuality, supports her aspirations, and takes responsibility for building a peaceful and secure life together. I also understand that marriage brings responsibilities toward both families. I will always respect and value the people who have raised her with love and care, and I hope she will always feel free to maintain that bond with her parents and family.",
+    ].join("\n\n"),
+    partnerPortrait: [
+      "I have come to know that she finds happiness in the little things: a piece of cake, a favourite song, a little playful mischief, or the excitement of seeing the mountains. I know she enjoys dressing up and wearing a saree, expressing herself through her own sense of style.",
+      "These are the little things I want to know, remember, and cherish about her. I want to be there to share those simple moments with her, to appreciate what makes her happy, to listen when she has something to share, and to stand beside her as she continues to grow and experience life.",
+      "I do not want to simply be her husband. I want to be someone with whom she can share her happiness, her worries, her dreams, and even the smallest moments of an ordinary day.",
+      "Above all, I hope to build a marriage founded on trust, respect, understanding, responsibility, companionship, and care. My wish is that, when she looks back at the decision to begin this journey together, she feels that she has not lost a family, but gained another home, another companion, and someone who will always stand beside her.",
+    ].join("\n\n"),
+    emphasis: "trust, respect, understanding, responsibility, companionship, and care",
     expectations: [],
   },
   narration: {
@@ -111,7 +119,17 @@ export const biodata: Biodata = {
       language: "en-US",
     },
     preferences: {
-      text: "Anim wanted to end with a few words of his own, written to her parents. You have raised your daughter with so much love. My wish is that, after marriage, she never feels she has lost the care of her parents' home. I hope she feels she has gained a partner who will share her joys, sorrows and dreams, and always honour her dignity. She finds joy in the little things: cake, a favourite song and a touch of playful mischief. The mountains call to her, and she enjoys dressing up and wearing a saree as a way to express her style.",
+      text: [
+        "A Promise of Partnership",
+        "You have raised your daughter with immense love, care, and responsibility. My sincere wish is that, after marriage, she never feels that she has lost the warmth, affection, and sense of belonging of her parents' home. Instead, I hope she feels that she has gained a life partner who will stand beside her with sincerity, responsibility, and respect.",
+        "I believe marriage is not simply a relationship between two individuals. It is a commitment to understand one another, share responsibilities, support each other's dreams, and remain beside each other through both the joyful and difficult chapters of life.",
+        "I want to be a husband who listens to her, respects her opinions and individuality, supports her aspirations, and takes responsibility for building a peaceful and secure life together. I also understand that marriage brings responsibilities toward both families. I will always respect and value the people who have raised her with love and care, and I hope she will always feel free to maintain that bond with her parents and family.",
+        "A Little About Your Daughter",
+        "I have come to know that she finds happiness in the little things: a piece of cake, a favourite song, a little playful mischief, or the excitement of seeing the mountains. I know she enjoys dressing up and wearing a saree, expressing herself through her own sense of style.",
+        "These are the little things I want to know, remember, and cherish about her. I want to be there to share those simple moments with her, to appreciate what makes her happy, to listen when she has something to share, and to stand beside her as she continues to grow and experience life.",
+        "I do not want to simply be her husband. I want to be someone with whom she can share her happiness, her worries, her dreams, and even the smallest moments of an ordinary day.",
+        "Above all, I hope to build a marriage founded on trust, respect, understanding, responsibility, companionship, and care. My wish is that, when she looks back at the decision to begin this journey together, she feels that she has not lost a family, but gained another home, another companion, and someone who will always stand beside her.",
+      ].join("\n\n"),
       language: "en-US",
     },
     closing: {

@@ -74,6 +74,7 @@ export interface Biodata {
   preferences: {
     introduction: string;
     partnerPortrait: string;
+    emphasis: string;
     expectations: string[];
   };
   narration: Partial<

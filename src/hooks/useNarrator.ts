@@ -6,7 +6,7 @@ import type { NarrationLine } from "@/types/biodata";
 const voiceConfig = { rate: 0.88, pitch: 0.86, volume: 1 };
 const allowedVoiceLanguages = new Set(["en", "bn", "de"]);
 const masculineVoiceNameHints = new Set([
-  "alex", "albert", "amit", "arjun", "daniel", "david", "fred", "george", "hans", "james", "john", "klaus", "liam", "mark", "michael", "oliver", "otto", "rahul", "ravi", "stefan", "thomas", "yannick",
+  "alex", "amit", "arjun", "daniel", "david", "fred", "george", "hans", "james", "john", "klaus", "liam", "mark", "michael", "oliver", "otto", "rahul", "ravi", "stefan", "thomas", "yannick",
 ]);
 
 const isAllowedVoice = (voice: SpeechSynthesisVoice) =>
@@ -31,6 +31,7 @@ export function useNarrator() {
   const [selectedLanguage, setSelectedLanguage] = useState<NarrationLanguage>("en-US");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [spokenCharacterIndex, setSpokenCharacterIndex] = useState<number | null>(null);
   const voiceList = useRef(voices);
   const activeUtterance = useRef<SpeechSynthesisUtterance | null>(null);
   const isSupported = useSyncExternalStore(
@@ -69,21 +70,27 @@ export function useNarrator() {
     if (activeUtterance.current) {
       activeUtterance.current.onend = null;
       activeUtterance.current.onerror = null;
+      activeUtterance.current.onstart = null;
+      activeUtterance.current.onboundary = null;
       activeUtterance.current = null;
     }
     window.speechSynthesis.cancel();
     setIsSpeaking(false);
     setIsPaused(false);
+    setSpokenCharacterIndex(null);
   }, []);
 
   const speak = useCallback((line: NarrationLine, onEnd: () => void) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
     window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(line.text);
+    const utterance = new SpeechSynthesisUtterance(line.text.replace(/\bAnim\b/g, "Onim"));
     const languagePrefix = selectedLanguage.slice(0, 2).toLowerCase();
+    const availableVoices = window.speechSynthesis.getVoices().filter(isAllowedVoice);
+    if (availableVoices.length > 0) voiceList.current = availableVoices;
     const languageVoices = voiceList.current.filter((voice) => voice.lang.toLowerCase().startsWith(languagePrefix));
     const preferred =
+      languageVoices.find((voice) => voice.localService && isLikelyMasculineVoice(voice)) ??
       languageVoices.find(isLikelyMasculineVoice) ??
       languageVoices.find((voice) => voice.localService) ??
       languageVoices[0] ??
@@ -92,24 +99,31 @@ export function useNarrator() {
       voiceList.current[0];
 
     if (preferred) utterance.voice = preferred;
-    utterance.lang = selectedLanguage;
-    utterance.rate = voiceConfig.rate;
-    utterance.pitch = voiceConfig.pitch;
+    utterance.lang = preferred?.lang ?? selectedLanguage;
+    const masculineVoice = preferred ? isLikelyMasculineVoice(preferred) : false;
+    utterance.rate = masculineVoice ? 0.76 : voiceConfig.rate;
+    utterance.pitch = masculineVoice ? 0.96 : voiceConfig.pitch;
     utterance.volume = voiceConfig.volume;
     utterance.onstart = () => {
       setIsSpeaking(true);
       setIsPaused(false);
+      setSpokenCharacterIndex(0);
+    };
+    utterance.onboundary = (event) => {
+      setSpokenCharacterIndex(event.charIndex);
     };
     utterance.onend = () => {
       activeUtterance.current = null;
       setIsSpeaking(false);
       setIsPaused(false);
+      setSpokenCharacterIndex(null);
       onEnd();
     };
     utterance.onerror = () => {
       activeUtterance.current = null;
       setIsSpeaking(false);
       setIsPaused(false);
+      setSpokenCharacterIndex(null);
       onEnd();
     };
     activeUtterance.current = utterance;
@@ -131,5 +145,16 @@ export function useNarrator() {
     }
   }, []);
 
-  return { selectedLanguage, setSelectedLanguage, isSupported, isSpeaking, isPaused, speak, stop, pause, resume };
+  return {
+    selectedLanguage,
+    setSelectedLanguage,
+    isSupported,
+    isSpeaking,
+    isPaused,
+    spokenCharacterIndex,
+    speak,
+    stop,
+    pause,
+    resume,
+  };
 }
